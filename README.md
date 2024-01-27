@@ -5,4 +5,4 @@ There are three types of Design pattern, namely, Creational, Structural and beha
 
 Creational patterns concern the process of object creation.
 Structural patterns deal with the composition of classes or objects. 
-Behavioral patterns characterize the ways in which classes or objects interact and distribute responsibility.
+Behavioral patterns characterize the ways in which classes or objects interact and distribute responsibility.
