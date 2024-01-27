@@ -1,10 +1,10 @@
-package com.abstractfactorydesign.factory;
+package com.creationaldesign.abstractfactorydesign.factory;
 
-import com.abstractfactorydesign.objects.colour.BlueColour;
-import com.abstractfactorydesign.objects.colour.Colour;
-import com.abstractfactorydesign.objects.colour.GreenColour;
-import com.abstractfactorydesign.objects.colour.RedColour;
-import com.abstractfactorydesign.objects.shape.Shape;
+import com.creationaldesign.abstractfactorydesign.objects.colour.BlueColour;
+import com.creationaldesign.abstractfactorydesign.objects.colour.Colour;
+import com.creationaldesign.abstractfactorydesign.objects.colour.GreenColour;
+import com.creationaldesign.abstractfactorydesign.objects.colour.RedColour;
+import com.creationaldesign.abstractfactorydesign.objects.shape.Shape;
 
 public class ColourFactory extends AbstractFactory{
     @Override

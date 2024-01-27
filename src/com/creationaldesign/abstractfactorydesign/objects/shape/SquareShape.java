@@ -1,4 +1,4 @@
-package com.abstractfactorydesign.objects.shape;
+package com.creationaldesign.abstractfactorydesign.objects.shape;
 
 public class SquareShape extends Shape  {
     @Override

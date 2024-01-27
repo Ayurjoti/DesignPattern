@@ -1,4 +1,4 @@
-package com.abstractfactorydesign.objects.colour;
+package com.creationaldesign.abstractfactorydesign.objects.colour;
 
 public class BlueColour extends Colour {
     @Override

@@ -1,6 +1,6 @@
-package com.factorydesign.os.impl;
+package com.creationaldesign.factorydesign.os.impl;
 
-import com.factorydesign.os.OS;
+import com.creationaldesign.factorydesign.os.OS;
 
 public class Android implements OS {
     @Override

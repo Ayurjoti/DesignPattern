@@ -1,10 +1,10 @@
-package com.factorydesign.factory;
+package com.creationaldesign.factorydesign.factory;
 
-import com.factorydesign.os.OS;
-import com.factorydesign.os.impl.Android;
-import com.factorydesign.os.impl.IOS;
-import com.factorydesign.os.impl.ObsoleteOS;
-import com.factorydesign.os.impl.Windows;
+import com.creationaldesign.factorydesign.os.OS;
+import com.creationaldesign.factorydesign.os.impl.Android;
+import com.creationaldesign.factorydesign.os.impl.IOS;
+import com.creationaldesign.factorydesign.os.impl.ObsoleteOS;
+import com.creationaldesign.factorydesign.os.impl.Windows;
 
 public class OSFactory {
     private OSFactory() {
