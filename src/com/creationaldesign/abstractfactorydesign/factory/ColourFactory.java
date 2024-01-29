@@ -8,7 +8,7 @@ import com.creationaldesign.abstractfactorydesign.objects.shape.Shape;
 
 public class ColourFactory extends AbstractFactory{
     @Override
-    Colour getColour(String colour) {
+    public Colour getColour(String colour) {
         if (colour == null)
             return null;
 
@@ -23,7 +23,7 @@ public class ColourFactory extends AbstractFactory{
     }
 
     @Override
-    Shape getShape(String Shape) {
+    public Shape getShape(String Shape) {
         return null;
     }
 }
