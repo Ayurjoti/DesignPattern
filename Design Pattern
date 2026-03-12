@@ -1,0 +1,586 @@
+*  Define SOLID principles.
+    The SOLID principles are a set of design principles for writing clean, maintainable, and scalable code in object-oriented programming:
+      * S - Single Responsibility Principle (SRP): A class should have only one reason to change, meaning it should only have one responsibility.
+      * O - Open/Closed Principle (OCP): Software entities like classes, modules, and functions should be open for extension but closed for modification.
+      * L - Liskov Substitution Principle (LSP): Subtypes should be substitutable for their base types without altering the correctness of the program.
+            If you have a base class (like "Animal") and a subclass (like "Dog"), you should be able to use a "Dog" wherever you use an "Animal" and it should work fine.
+      * I - Interface Segregation Principle (ISP): Clients should not be forced to depend on interfaces they do not use. It’s better to have smaller, specific interfaces rather than one large, general-purpose interface.
+      * D - Dependency Inversion Principle (DIP): High-level modules should not depend on low-level modules; both should depend on abstractions. Abstractions should not depend on details; details should depend on abstractions.
+            if you have a class that needs to send messages (like a notification), it shouldn't depend directly on a specific messaging service (like email or SMS). Instead, it should depend on an interface (like "MessageService")
+
+*  Explain DRY (Don't repeat yourself) principle.
+    This principle means avoiding repetition in your code. If you find yourself writing the same code or logic in multiple places, you should try to move it into a single place (like a function or class) that can be reused.
+
+*  Explain YAGNI (You aren't gonna need it) principle.
+    This principle means don't add functionality until it’s actually necessary. Only build what you need right now, not what you think you might need in the future.
+    Let's say you're building a user registration feature, and you think, "Maybe in the future, users will want to add their profile pictures during registration." So, you start adding extra code to handle profile pictures, even though it's not required now.
+
+* Explain KISS (Keep it simple and stypid) principle.
+    The KISS (Keep It Simple, Stupid) principle emphasizes that simplicity is key. It means you should aim to write code that is as simple and straightforward as possible, avoiding unnecessary complexity. This makes the code easier to understand, maintain, and debug.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+* Creational Pattern 
+    * Singleton Pattern:
+        The Singleton pattern ensures that a class or object has only one instance throughout the application and provides a global access point to it.
+        This is useful when you want to control access to a shared resource, like a database connection.
+        example:
+            type Singleton struct {
+                // fields if needed
+            }
+            
+            var instance *Singleton
+            var once sync.Once
+            
+            // GetInstance returns the singleton instance.
+            func GetInstance() *Singleton {
+                once.Do(func() {
+                    instance = &Singleton{}
+                })
+                return instance
+            }
+        once.Do ensures that the instance is created only once, even in concurrent scenarios.
+        GetInstance() returns the same instance every time it is called.
+
+    * Factory Method:
+        Imagine you’re building a logistics app that starts with trucks for transport. Over time, sea transport companies want to join in.
+        But the code is tightly tied to trucks, so adding ships means rewriting a lot of the app.
+        If you add new transport types later, you’ll face the same problem, ending up with messy code full of conditionals.
+        Solution: 
+            The Factory Method pattern helps by replacing direct object creation with a factory method.
+            Instead of creating truck or ship objects directly, you call a factory method that handles the creation.
+            This way, if you need to add new transport types, you only need to change the factory method, not the whole app.
+            The key is that all transport types (like Truck or Ship) must share a common interface or base class.
+            The factory method in the base class will return this type, allowing subclasses to decide which transport object to create.
+
+            Example: 
+            
+                // Transport is the common interface for all transport types.
+                type Transport interface {
+                	Deliver() string
+                }
+                
+                // Truck is a type of transport.
+                type Truck struct{}
+                
+                func (t *Truck) Deliver() string {
+                	return "Delivering by land in a truck"
+                }
+                
+                // Ship is another type of transport.
+                type Ship struct{}
+                
+                func (s *Ship) Deliver() string {
+                	return "Delivering by sea in a ship"
+                }
+                
+                // Logistics is the base factory interface.
+                type Logistics interface {
+                	CreateTransport() Transport
+                }
+                
+                // RoadLogistics creates trucks.
+                type RoadLogistics struct{}
+                
+                func (r *RoadLogistics) CreateTransport() Transport {
+                	return &Truck{}
+                }
+                
+                // SeaLogistics creates ships.
+                type SeaLogistics struct{}
+                
+                func (s *SeaLogistics) CreateTransport() Transport {
+                	return &Ship{}
+                }
+                
+                func main() {
+                	var logistics Logistics
+                
+                	// Using road logistics to create a truck.
+                	logistics = &RoadLogistics{}
+                	transport := logistics.CreateTransport()
+                	fmt.Println(transport.Deliver()) // Output: Delivering by land in a truck
+                
+                	// Using sea logistics to create a ship.
+                	logistics = &SeaLogistics{}
+                	transport = logistics.CreateTransport()
+                	fmt.Println(transport.Deliver()) // Output: Delivering by sea in a ship
+                }
+
+    * Abstract Factory Pattern 
+        The Abstract Factory Pattern is a creational design pattern that provides an interface for creating families of related or dependent objects without specifying their concrete classes
+        Families of Products: It creates a set of related objects. For example, in a GUI application, an abstract factory might create buttons, checkboxes, and text fields for different operating systems (like Windows or macOS).
+        Abstract Factory pattern as a higher-level abstraction that builds on top of the Factory Method pattern.
+        Example:
+            // Product Interfaces
+            type Truck interface {
+                Deliver() string
+            }
+            
+            type Ship interface {
+                Deliver() string
+            }
+            
+            // Abstract Factory Interface
+            type LogisticsFactory interface {
+                CreateTruck() Truck
+                CreateShip() Ship
+            }
+            
+            // Concrete Product Implementations for Trucks
+            type StandardTruck struct{}
+            func (s *StandardTruck) Deliver() string {
+                return "Delivering cargo by Standard Truck"
+            }
+            
+            type ExpressTruck struct{}
+            func (e *ExpressTruck) Deliver() string {
+                return "Delivering cargo by Express Truck"
+            }
+            
+            // Concrete Product Implementations for Ships
+            type CargoShip struct{}
+            func (c *CargoShip) Deliver() string {
+                return "Delivering goods by Cargo Ship"
+            }
+            
+            type TankerShip struct{}
+            func (t *TankerShip) Deliver() string {
+                return "Delivering liquids by Tanker Ship"
+            }
+            
+            // Concrete Factory Implementations
+            type StandardLogisticsFactory struct{}
+            func (s *StandardLogisticsFactory) CreateTruck() Truck {
+                return &StandardTruck{}
+            }
+            func (s *StandardLogisticsFactory) CreateShip() Ship {
+                return &CargoShip{}
+            }
+            
+            type ExpressLogisticsFactory struct{}
+            func (e *ExpressLogisticsFactory) CreateTruck() Truck {
+                return &ExpressTruck{}
+            }
+            func (e *ExpressLogisticsFactory) CreateShip() Ship {
+                return &TankerShip{}
+            }
+            
+            // Client Code
+            func main() {
+                var factory LogisticsFactory
+            
+                // Using Standard Logistics
+                factory = &StandardLogisticsFactory{}
+                standardTruck := factory.CreateTruck()
+                cargoShip := factory.CreateShip()
+            
+                println(standardTruck.Deliver()) // Output: Delivering cargo by Standard Truck
+                println(cargoShip.Deliver())      // Output: Delivering goods by Cargo Ship
+            
+                // Using Express Logistics
+                factory = &ExpressLogisticsFactory{}
+                expressTruck := factory.CreateTruck()
+                tankerShip := factory.CreateShip()
+            
+                println(expressTruck.Deliver()) // Output: Delivering cargo by Express Truck
+                println(tankerShip.Deliver())     // Output: Delivering liquids by Tanker Ship
+            }
+
+    * Builder Pattern 
+        The Builder Pattern is a design pattern used to create complex objects step by step, instead of all at once. This makes it easier to build objects that have many parts or options.
+        Imagine you’re building a pizza. Instead of a single constructor, you can have a PizzaBuilder where you can:
+            Set the size of the pizza.
+            Add cheese.
+            Add pepperoni.
+            Finally, create the pizza.
+        Example:
+            // Pizza struct
+            type Pizza struct {
+                size     string
+                hasCheese bool
+                hasPepperoni bool
+            }
+            
+            // Pizza Builder
+            type PizzaBuilder struct {
+                pizza Pizza
+            }
+            
+            // Methods to build the pizza
+            func (b *PizzaBuilder) SetSize(size string) *PizzaBuilder {
+                b.pizza.size = size
+                return b
+            }
+            
+            func (b *PizzaBuilder) AddCheese() *PizzaBuilder {
+                b.pizza.hasCheese = true
+                return b
+            }
+            
+            func (b *PizzaBuilder) AddPepperoni() *PizzaBuilder {
+                b.pizza.hasPepperoni = true
+                return b
+            }
+            
+            func (b *PizzaBuilder) Build() Pizza {
+                return b.pizza
+            }
+            
+            func main() {
+                builder := &PizzaBuilder{}
+                pizza := builder.SetSize("Medium").AddCheese().AddPepperoni().Build()
+                fmt.Printf("Created a pizza: %+v\n", pizza)
+            }
+        Benefits:
+            Separation of Concerns: Keeps the object creation process separate from the object itself.
+            Improved Readability: Makes code easier to read by clearly showing how an object is built.
+            Flexibility: Easily create different versions of an object without changing much code.
+            Easy Maintenance: Change the building process without affecting other parts of the code.
+
+    * Prototype Design Pattern 
+        The Prototype Pattern is a design pattern that allows you to create new objects by copying an existing object, known as the prototype. 
+        Instead of creating new instances from scratch, you clone a prototype instance, which can save time and resources, especially for complex objects.
+        Example:   
+            // Prototype interface
+            type Prototype interface {
+                Clone() Prototype
+            }
+            
+            // ConcretePrototype
+            type ConcretePrototype struct {
+                Name string
+            }
+            
+            // Clone method
+            func (p *ConcretePrototype) Clone() Prototype {
+                return &ConcretePrototype{Name: p.Name}
+            }
+            
+            func main() {
+                original := &ConcretePrototype{Name: "Original"}
+                clone := original.Clone()
+            
+                fmt.Println("Original:", original.Name) // Output: Original: Original
+                fmt.Println("Clone:", clone.(*ConcretePrototype).Name) // Output: Clone: Original
+            }
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+* Structural Patterns
+    * Adaptor Pattern 
+        The Adapter Pattern is a design pattern that allows incompatible interfaces to work together.
+        It acts as a bridge between two different interfaces, making it easier for them to communicate without modifying their existing code.
+        Example:
+            // Target interface
+            type Target interface {
+                Request() string
+            }
+            
+            // Adaptee with a different interface
+            type Adaptee struct{}
+            
+            func (a *Adaptee) SpecificRequest() string {
+                return "Adaptee: Specific Request"
+            }
+            
+            // Adapter that implements the Target interface
+            type Adapter struct {
+                adaptee *Adaptee
+            }
+            
+            func (a *Adapter) Request() string {
+                return a.adaptee.SpecificRequest()
+            }
+            
+            func main() {
+                adaptee := &Adaptee{}
+                adapter := &Adapter{adaptee: adaptee}
+            
+                // Using the adapter to call the specific request
+                fmt.Println(adapter.Request()) // Output: Adaptee: Specific Request
+            }
+
+    * Facade Design Pattern
+        The Facade Pattern is a design pattern that provides a simplified interface to a complex subsystem. It hides the complexity of the system and allows users to interact with it more easily.
+        It reduces the complexity for the user by encapsulating the complex code behind a simple interface.
+        The facade decouples the client code from the complex subsystem, making it easier to change the system without affecting the client.
+        EXAMPLE: 
+            // Subsystem classes
+            type Light struct{}
+            func (l *Light) TurnOn() {
+                fmt.Println("Light turned on")
+            }
+            
+            type MusicSystem struct{}
+            func (m *MusicSystem) PlayMusic() {
+                fmt.Println("Playing music")
+            }
+            
+            type Projector struct{}
+            func (p *Projector) Start() {
+                fmt.Println("Projector started")
+            }
+            
+            // Facade
+            type HomeTheaterFacade struct {
+                light       *Light
+                musicSystem *MusicSystem
+                projector   *Projector
+            }
+            
+            func NewHomeTheaterFacade() *HomeTheaterFacade {
+                return &HomeTheaterFacade{
+                    light:       &Light{},
+                    musicSystem: &MusicSystem{},
+                    projector:   &Projector{},
+                }
+            }
+            
+            func (h *HomeTheaterFacade) WatchMovie() {
+                h.light.TurnOn()
+                h.musicSystem.PlayMusic()
+                h.projector.Start()
+                fmt.Println("Ready to watch movie!")
+            }
+            
+            func main() {
+                facade := NewHomeTheaterFacade()
+                facade.WatchMovie()
+            }
+
+    * Decorator Pattern 
+        The Decorator Pattern is a design pattern that allows you to add new functionality to an existing object without modifying its structure.
+        It wraps the original object and enhances its behavior.
+        Flexible: Multiple decorators can be combined to create different variations of an object’s behavior.
+        Single Responsibility: It keeps classes focused on their specific tasks by allowing additional features to be added externally.
+        Example:   
+            // Base interface
+            type Coffee interface {
+            	Cost() float64
+            	Description() string
+            }
+            
+            // Concrete implementation
+            type SimpleCoffee struct{}
+            
+            func (c *SimpleCoffee) Cost() float64 {
+            	return 2.0
+            }
+            
+            func (c *SimpleCoffee) Description() string {
+            	return "Simple Coffee"
+            }
+            
+            // Decorator
+            type MilkDecorator struct {
+            	coffee Coffee
+            }
+            
+            func (d *MilkDecorator) Cost() float64 {
+            	return d.coffee.Cost() + 0.5
+            }
+            
+            func (d *MilkDecorator) Description() string {
+            	return d.coffee.Description() + ", with Milk"
+            }
+            
+            // Another Decorator
+            type SugarDecorator struct {
+            	coffee Coffee
+            }
+            
+            func (d *SugarDecorator) Cost() float64 {
+            	return d.coffee.Cost() + 0.2
+            }
+            
+            func (d *SugarDecorator) Description() string {
+            	return d.coffee.Description() + ", with Sugar"
+            }
+            
+            func main() {
+            	// Create a simple coffee
+            	myCoffee := &SimpleCoffee{}
+            	fmt.Println(myCoffee.Description(), "costs", myCoffee.Cost())
+            
+            	// Add milk
+            	myCoffeeWithMilk := &MilkDecorator{coffee: myCoffee}
+            	fmt.Println(myCoffeeWithMilk.Description(), "costs", myCoffeeWithMilk.Cost())
+            
+            	// Add sugar
+            	myCoffeeWithMilkAndSugar := &SugarDecorator{coffee: myCoffeeWithMilk}
+            	fmt.Println(myCoffeeWithMilkAndSugar.Description(), "costs", myCoffeeWithMilkAndSugar.Cost())
+            }
+
+    * Composite Design Pattern 
+        The Composite Design Pattern is a structural pattern that allows you to treat individual objects and compositions of objects uniformly.
+        It lets you create a tree-like structure where both single objects (leaf nodes) and groups of objects (composite nodes) can be treated the same way.
+        Example:
+            // Component interface
+            type FileSystemComponent interface {
+            	GetName() string
+            }
+            
+            // Leaf
+            type File struct {
+            	name string
+            }
+            
+            func (f *File) GetName() string {
+            	return f.name
+            }
+            
+            // Composite
+            type Directory struct {
+            	name     string
+            	children []FileSystemComponent
+            }
+            
+            func (d *Directory) GetName() string {
+            	return d.name
+            }
+            
+            func (d *Directory) Add(child FileSystemComponent) {
+            	d.children = append(d.children, child)
+            }
+            
+            func (d *Directory) ShowContents() {
+            	fmt.Println("Directory:", d.name)
+            	for _, child := range d.children {
+            		fmt.Println(" -", child.GetName())
+            	}
+            }
+            
+            func main() {
+            	// Create files
+            	file1 := &File{name: "File1.txt"}
+            	file2 := &File{name: "File2.txt"}
+            
+            	// Create directory and add files
+            	dir := &Directory{name: "MyDirectory"}
+            	dir.Add(file1)
+            	dir.Add(file2)
+            
+            	// Show directory contents
+            	dir.ShowContents()
+            }
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Behavioral Patterns
+    * Strategy:
+        The Strategy Pattern is a behavioral design pattern that enables selecting an algorithm's behavior at runtime.
+        It allows you to define a family of algorithms, encapsulate each one, and make them interchangeable without altering the code that uses them.
+        Example:
+            // Strategy interface
+            type PaymentStrategy interface {
+            	Pay(amount float64)
+            }
+            
+            // Concrete strategies
+            type CreditCard struct {
+            	cardNumber string
+            }
+            
+            func (c *CreditCard) Pay(amount float64) {
+            	fmt.Printf("Paid %.2f using Credit Card %s\n", amount, c.cardNumber)
+            }
+            
+            type PayPal struct {
+            	email string
+            }
+            
+            func (p *PayPal) Pay(amount float64) {
+            	fmt.Printf("Paid %.2f using PayPal account %s\n", amount, p.email)
+            }
+            
+            // Context
+            type ShoppingCart struct {
+            	strategy PaymentStrategy
+            }
+            
+            func (sc *ShoppingCart) SetPaymentStrategy(strategy PaymentStrategy) {
+            	sc.strategy = strategy
+            }
+            
+            func (sc *ShoppingCart) Checkout(amount float64) {
+            	sc.strategy.Pay(amount)
+            }
+            
+            func main() {
+            	cart := &ShoppingCart{}
+            
+            	// Using Credit Card
+            	cart.SetPaymentStrategy(&CreditCard{cardNumber: "1234-5678-9876-5432"})
+            	cart.Checkout(100.00)
+            
+            	// Switching to PayPal
+            	cart.SetPaymentStrategy(&PayPal{email: "user@example.com"})
+            	cart.Checkout(50.00)
+            }
+
+    * Observer Pattern:
+        The Observer Pattern is a design pattern used to establish a one-to-many relationship between objects.
+        In this pattern, one object (the subject) maintains a list of its dependent objects (the observers) and automatically notifies them of any state changes.
+        Example: 
+            // Observer interface
+            type Observer interface {
+            	Update(data string)
+            }
+            
+            // Subject interface
+            type Subject interface {
+            	Register(observer Observer)
+            	Unregister(observer Observer)
+            	Notify()
+            	SetData(data string)
+            }
+            
+            // Concrete subject
+            type NewsPublisher struct {
+            	observers []Observer
+            	data      string
+            }
+            
+            func (n *NewsPublisher) Register(observer Observer) {
+            	n.observers = append(n.observers, observer)
+            }
+            
+            func (n *NewsPublisher) Unregister(observer Observer) {
+            	for i, obs := range n.observers {
+            		if obs == observer {
+            			n.observers = append(n.observers[:i], n.observers[i+1:]...)
+            			break
+            		}
+            	}
+            }
+            
+            func (n *NewsPublisher) Notify() {
+            	for _, observer := range n.observers {
+            		observer.Update(n.data)
+            	}
+            }
+            
+            // Implementing SetData in the concrete subject
+            func (n *NewsPublisher) SetData(data string) {
+            	n.data = data
+            	n.Notify() // Notify observers when data changes
+            }
+            
+            // Concrete observer
+            type NewsChannel struct {
+            	name string
+            }
+            
+            func (n *NewsChannel) Update(data string) {
+            	fmt.Printf("%s received news: %s\n", n.name, data)
+            }
+            
+            func main() {
+            	publisher := &NewsPublisher{}
+            	channel1 := &NewsChannel{name: "Channel 1"}
+            	channel2 := &NewsChannel{name: "Channel 2"}
+            
+            	publisher.Register(channel1)
+            	publisher.Register(channel2)
+            
+            	publisher.SetData("Breaking News!") // This will notify all observers
+            }
